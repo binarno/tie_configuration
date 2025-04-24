@@ -1,26 +1,55 @@
 import streamlit as st
 import urllib.parse
 
-from streamlit.components.v1 import html
+if 'configuring' not in st.session_state:
+    st.session_state.configuring = False
+
+if 'error' not in st.session_state:
+    st.session_state.error = ''
 
 
-def configure_jeanie(auth_user: str, auth_password: str, sip_address: str):
+def change_state():
+    st.session_state.auth_user = auth_user_field
+    st.session_state.auth_password = auth_password_field
+    st.session_state.sip_address = sip_address_field
 
-    parameters = {'authUser': auth_user, 'authPassword': auth_password, 'account': sip_address}
-    open_script= """
-        <script type="text/javascript">
-            window.open('%s');
-        </script>
-    """ % ('tiephoneconfig:\\open=?' + urllib.parse.urlencode(parameters))
+    valid = (st.session_state.auth_user != '' and
+             st.session_state.auth_password != ''
+             and st.session_state.sip_address.find('@') > 0)
 
-    html(open_script)
+    if valid:
+        st.session_state.configuring = True
+        st.session_state.error = ''
+    else:
+        st.session_state.configuring = False
+        st.session_state.error = '### One or more entries are not correct'
 
 
-st.title('Jeannie Softphone Configuration')
-
-
-with st.form("configure_form"):
+if not st.session_state.configuring:
+    st.title('Jeannie Softphone Configuration')
     auth_user_field = st.text_input('Auth user', placeholder='123456789')
     auth_password_field = st.text_input('Password', type='password')
     sip_address_field = st.text_input('SIP user address', placeholder='user@domain.com')
-    st.form_submit_button('Configure Jeanie', on_click=configure_jeanie, args=(auth_user_field, auth_password_field, sip_address_field))
+
+    if st.session_state.error != '':
+        st.markdown(st.session_state.error)
+
+    st.button('Configure Jeanie', on_click=change_state)
+
+else:
+    st.title('Almost there!')
+    st.markdown("""
+    Click the button below to finish configuring your Jeanie app.
+    
+    Before you click:
+    
+    - Make sure you installed Jeanie
+    - After you click the button, allow your browser to launch Jeanie
+    """)
+
+    parameters = {'authUser': st.session_state.auth_user, 'authPassword': st.session_state.auth_password, 'account': st.session_state.sip_address}
+    url = 'tiephoneconfig:\\open=?authUser=' + st.session_state.auth_user + '&authPassword=' + st.session_state.auth_password + '&account=' + st.session_state.sip_address
+    st.link_button('Almost there! Click here to Jeanie', url)
+
+
+
