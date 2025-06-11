@@ -48,8 +48,11 @@ else:
     """)
 
     parameters = {'authUser': st.session_state.auth_user, 'authPassword': st.session_state.auth_password, 'account': st.session_state.sip_address}
-    url = 'tiephoneconfig:\\open=?authUser=' + st.session_state.auth_user + '&authPassword=' + st.session_state.auth_password + '&account=' + st.session_state.sip_address
-    st.link_button('Almost there! Click here to Jeanie', url)
+    url = 'tiephoneconfig://open?' + urllib.parse.urlencode(parameters)
+    st.link_button('Almost there! Click here to configure Jeanie', url)
+    st.markdown(f"""
+    Configuration URL: [{url}]({url})
+    """)
 
 
 
