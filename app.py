@@ -18,6 +18,7 @@ def change_state():
     st.session_state.auth_user = auth_user_field
     st.session_state.auth_password = auth_password_field
     st.session_state.sip_address = sip_address_field
+    st.session_state.audio_recording_folder = audio_recording_folder_field
 
     valid = (st.session_state.auth_user != '' and
              st.session_state.auth_password != ''
@@ -36,6 +37,7 @@ if not st.session_state.configuring:
     auth_user_field = st.text_input('Auth user', placeholder='123456789')
     auth_password_field = st.text_input('Password', type='password')
     sip_address_field = st.text_input('SIP user address', placeholder='user@domain.com')
+    audio_recording_folder_field = st.text_input('Audio recording folder', placeholder='c:\\somefolder')
 
     if st.session_state.error != '':
         st.markdown(st.session_state.error)
@@ -53,7 +55,7 @@ else:
     - After you click the button, allow your browser to launch Jeanie
     """)
 
-    parameters = {'authUser': st.session_state.auth_user, 'authPassword': st.session_state.auth_password, 'account': st.session_state.sip_address}
+    parameters = {'authUser': st.session_state.auth_user, 'authPassword': st.session_state.auth_password, 'account': st.session_state.sip_address, 'recordingFolder': st.session_state.audio_recording_folder}
     encoded_parameters = urllib.parse.urlencode(parameters)
 
     url = 'tiephoneconfig://open/?' + encoded_parameters
